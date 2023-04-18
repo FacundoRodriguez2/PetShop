@@ -642,6 +642,13 @@ footer {
     height: 1.5rem;
 }
 
+.handleLessStock, .handleMoreStock{
+    cursor: pointer;
+    border: 1px solid black;
+    padding: 0 8px;
+    border-radius: 10px;
+}
+
 .btn-delete {
     border: none;
     background: transparent;
@@ -658,6 +665,7 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
 }
 
 .cart-delete {

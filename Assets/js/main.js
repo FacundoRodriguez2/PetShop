@@ -29,32 +29,106 @@ carrito.addEventListener("click", (e) => {
 })
 
 modalCarrito.addEventListener("click", (e) => {
+    if (e.target.className.includes("handleLessStock")) {
+        let deleteProduct = 0
+        products.forEach(product => {
+            if (product._id == e.target.id) {
+                if (product.stock == 1) {
+                    deleteProduct = 1
+                    pharmacyProducts.forEach(pharmacyProduct => {
+                        if (pharmacyProduct._id == e.target.id) {
+                            pharmacyProduct.disponibles += 1
+                        }
+                    })
+                    toys.forEach(toy => {
+                        if (toy._id == e.target.id) {
+                            toy.disponibles += 1
+                        }
+                    })
+                } else {
+                    product.stock -= 1
+                    product.disponibles += 1
+                    pharmacyProducts.forEach(pharmacyProduct => {
+                        if (pharmacyProduct._id == e.target.id) {
+                            pharmacyProduct.disponibles += 1
+                        }
+                    })
+                    toys.forEach(toy => {
+                        if (toy._id == e.target.id) {
+                            toy.disponibles += 1
+                        }
+                    })
+                }
+            }
+        })
+        if (deleteProduct == 1) {
+
+            if (products.some(product => product._id == e.target.id)) {
+                products = products.filter((product) => product._id != e.target.id)
+                localStorage.setItem("products", JSON.stringify(products))
+            }
+        }
+        createShopping(products, shopping, precioTotal, true)
+        localStorage.setItem("products", JSON.stringify(products))
+        localStorage.setItem('toys', JSON.stringify(toys))
+        localStorage.setItem('pharmacyProducts', JSON.stringify(pharmacyProducts))
+    }
+
+    if (e.target.className.includes("handleMoreStock")) {
+        products.forEach(product => {
+            if (product._id == e.target.id) {
+                if (product.disponibles !== 1) {
+                    product.stock += 1
+                    product.disponibles -= 1
+                    pharmacyProducts.forEach(pharmacyProduct => {
+                        if (pharmacyProduct._id == e.target.id) {
+                            pharmacyProduct.disponibles -= 1
+                        }
+                    })
+                    toys.forEach(toy => {
+                        if (toy._id == e.target.id) {
+                            toy.disponibles -= 1
+                        }
+                    })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Ya tenes el maximo disponible',
+                    })
+                }
+            }
+        })
+        createShopping(products, shopping, precioTotal, true)
+        localStorage.setItem("products", JSON.stringify(products))
+    }
+
     if (e.target.className.includes("garbage")) {
         let id = e.target.id
 
         cartProducts.forEach(cartProduct => {
-            if (cartProduct._id == id) {         
-                let finalProduct = products.find( product => product._id == cartProduct._id)           
-                let position = products.findIndex( product => product == finalProduct )         
-                products.splice(position,1)
+            if (cartProduct._id == id) {
+                let finalProduct = products.find(product => product._id == cartProduct._id)
+                let position = products.findIndex(product => product == finalProduct)
+                products.splice(position, 1)
                 localStorage.setItem("products", JSON.stringify(products))
-
-                cartProduct.disponibles++
+                cartProduct.disponibles += finalProduct.stock
             }
         })
-        
+
         localStorage.setItem("toys", JSON.stringify(cartProducts.filter(product => product.categoria == "jugueteria")))
         localStorage.setItem("pharmacyProducts", JSON.stringify(cartProducts.filter(product => product.categoria == "farmacia")))
 
         precioTotal = 0
         products.forEach(product => precioTotal += product.precio)
-        createShopping(products,shopping,precioTotal,false) 
+        createShopping(products, shopping, precioTotal, true)
 
-    }else if(e.target.id == "eliminar"){
+    }
+    else if (e.target.id == "eliminar") {
         cartProducts.forEach(cartProduct => {
             products.forEach(product => {
-                if(product._id == cartProduct._id){
-                    cartProduct.disponibles++
+                if (product._id == cartProduct._id) {
+                    cartProduct.disponibles += product.stock
                 }
             })
         })
@@ -63,13 +137,14 @@ modalCarrito.addEventListener("click", (e) => {
         products = []
         localStorage.setItem("products", JSON.stringify(products))
         precioTotal = 0
-        createShopping(products,shopping,precioTotal,false)
+        createShopping(products, shopping, precioTotal, true)
 
-    }else if(e.target.id == "comprar"){
+    }
+    else if (e.target.id == "comprar") {
         products = []
         localStorage.setItem("products", JSON.stringify(products))
         precioTotal = 0
-        createShopping(products,shopping,precioTotal,false)
+        createShopping(products, shopping, precioTotal, true)
         Swal.fire({
             position: 'center',
             icon: 'success',

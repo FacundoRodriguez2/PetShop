@@ -178,7 +178,12 @@ export function createShopping(list,container,precioTotal=0,bool){
         <div class="shopping-info">
           <div class="cart-info">
             <b>${element.producto}</b>
-            <p>Precio: ${element.precio}</p>
+            <p class="m-0">Precio: ${element.precio}</p>
+            <div class="d-flex gap-3 justify-content-start align-items-center">
+              <p class="font-weight-bold h4 m-0 handleLessStock" id="${element._id}">-</p>
+              <p class="m-0">${element.stock}</p>
+              <p class="font-weight-bold h4 m-0 handleMoreStock" id="${element._id}">+</p>
+            </div>
           </div>
           <div class="cart-delete">
             <button class="btn-delete"> 
